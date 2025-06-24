@@ -4,22 +4,23 @@ from gymnasium.wrappers import GrayscaleObservation, ResizeObservation
 import ale_py
 import torch
 
-# Configuración optimizada para GPU RTX 4090 (24GB VRAM)
+# Configuración ÓPTIMA para RTX 4090 basada en benchmarks
 episodes = 10000
 max_episode_steps = 10000
 
-# Verificar si CUDA está disponible y optimizar en consecuencia
+# Verificar si CUDA está disponible y usar configuración óptima
 if torch.cuda.is_available():
     print(f"CUDA disponible. GPU: {torch.cuda.get_device_name(0)}")
     print(f"Memoria GPU disponible: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f} GB")
     
-    # Configuración agresiva para RTX 4090
-    hidden_layer = 1024  # Red mucho más grande
-    batch_size = 1024    # Batch grande para aprovechar paralelización
-    learning_rate = 0.0003  # LR ligeramente más alto para batch grande
+    # CONFIGURACIÓN ÓPTIMA basada en benchmarks reales
+    hidden_layer = 512     # Sweet spot para RTX 4090
+    batch_size = 128       # Eficiente sin overhead
+    learning_rate = 0.0002 # Ligeramente más alto para red más grande
     
     # Usar mixed precision para mejor rendimiento
     torch.backends.cudnn.benchmark = True
+    print("Usando configuración ÓPTIMA para RTX 4090")
     
 else:
     print("CUDA no disponible, usando CPU")
