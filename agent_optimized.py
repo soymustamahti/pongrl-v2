@@ -25,11 +25,12 @@ class OptimizedAgent():
         self.gamma = gamma
         self.use_mixed_precision = use_mixed_precision
 
-        obs, info = self.env.reset()
-        obs = self.process_observation(obs)
-
+        # Definir device primero
         self.device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
         print(f'Loaded model on device {self.device}')
+
+        obs, info = self.env.reset()
+        obs = self.process_observation(obs)
 
         # Buffer más grande para GPU
         buffer_size = 1000000 if self.device.startswith('cuda') else 500000
