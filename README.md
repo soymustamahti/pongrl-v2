@@ -9,13 +9,17 @@ The project consists of a complete reinforcement learning pipeline that trains a
 ## Project Structure
 
 ```
-├── agent.py           # Main DQN agent implementation
-├── model.py           # Neural network architecture
-├── buffer.py          # Experience replay buffer
-├── train.py           # Training script
-├── test.py           # Testing/evaluation script
-├── requirements.txt   # Python dependencies
-└── README.md         # This file
+├── agent.py                    # Main DQN agent implementation
+├── agent_optimized.py          # GPU-optimized agent with mixed precision
+├── model.py                    # Neural network architecture
+├── buffer.py                   # Experience replay buffer
+├── train.py                    # Training script (CPU/small GPU)
+├── train_gpu_optimized.py      # Training script optimized for powerful GPUs
+├── test.py                     # Testing/evaluation script
+├── test_optimized.py           # Testing script for optimized agent
+├── benchmark.py                # Performance comparison tool
+├── requirements.txt            # Python dependencies
+└── README.md                   # This file
 ```
 
 ## Components Explained
@@ -105,6 +109,28 @@ python train.py
 - Experience replay starts after 320 experiences (5 × batch_size)
 - Target network updates every 4 steps
 - Model saves after every episode
+
+### GPU-Optimized Training (Recommended for RTX 4090+)
+
+For high-end GPUs with 16GB+ VRAM:
+
+```bash
+python train_gpu_optimized.py
+```
+
+**Optimized Features**:
+
+- Automatically detects GPU and configures optimal settings
+- Uses 1024 hidden units and 1024 batch size for RTX 4090
+- Mixed precision training for 2x speedup
+- Larger experience buffer (1M vs 500K)
+- Advanced gradient clipping and regularization
+
+**Expected Performance**:
+
+- RTX 4090: ~2-3x faster than CPU
+- RTX 3080/4080: ~1.5-2x faster than CPU
+- Older GPUs: May be slower due to overhead
 
 ### Testing the Agent
 
@@ -244,5 +270,31 @@ Change game settings in `train.py` and `test.py`:
 - Different Atari games
 - Frame resolution
 - Action repeat frequency
+
+## GPU Optimization Features
+
+### New Optimized Components
+
+#### `agent_optimized.py` - GPU-Optimized Agent
+
+- **Mixed Precision Training**: Uses FP16 for faster training on modern GPUs
+- **Minimized CPU-GPU Transfers**: Keeps tensors on GPU when possible
+- **Larger Buffer**: 1M experiences for GPU setups vs 500K for CPU
+- **AdamW Optimizer**: Better regularization with weight decay
+- **Gradient Clipping**: Prevents exploding gradients in large networks
+- **Efficient Batching**: Optimized for larger batch sizes (512-1024)
+
+#### `train_gpu_optimized.py` - High-Performance Training
+
+- **Auto-Detection**: Automatically configures for GPU vs CPU
+- **Large Networks**: 1024 hidden units for RTX 4090 class GPUs
+- **Big Batches**: 1024 batch size for maximum GPU utilization
+- **Advanced Features**: Mixed precision, gradient clipping, memory management
+
+#### `benchmark.py` - Performance Testing
+
+- **Side-by-side Comparison**: Tests both original and optimized agents
+- **Detailed Metrics**: Steps/second, memory usage, speedup measurements
+- **Hardware Detection**: Automatic configuration based on available hardware
 
 This implementation provides a solid foundation for understanding and experimenting with deep reinforcement learning in the classic Pong environment.
