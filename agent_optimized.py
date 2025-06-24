@@ -44,7 +44,7 @@ class OptimizedAgent():
         
         # Gradient scaler para mixed precision
         if self.use_mixed_precision and self.device.startswith('cuda'):
-            self.scaler = torch.cuda.amp.GradScaler()
+            self.scaler = torch.amp.GradScaler('cuda')
             print("Usando Mixed Precision Training")
         else:
             self.scaler = None
@@ -71,7 +71,7 @@ class OptimizedAgent():
                     obs = obs.to(self.device, non_blocking=True)
                 
                 if self.use_mixed_precision and self.scaler:
-                    with torch.cuda.amp.autocast():
+                    with torch.amp.autocast('cuda'):
                         q_values = self.model(obs.unsqueeze(0))[0]
                 else:
                     q_values = self.model(obs.unsqueeze(0))[0]
@@ -98,7 +98,7 @@ class OptimizedAgent():
         actions = actions.unsqueeze(1).long()
 
         if self.use_mixed_precision and self.scaler:
-            with torch.cuda.amp.autocast():
+            with torch.amp.autocast('cuda'):
                 # Forward pass con mixed precision
                 q_values = self.model(observations)
                 qsa_batch = q_values.gather(1, actions)
